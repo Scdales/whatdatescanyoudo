@@ -1,8 +1,10 @@
-export const calendarTableParams = {
+import { CreateTableInput } from '@aws-sdk/client-dynamodb'
+
+export const calendarTableParams: CreateTableInput = {
   TableName: 'Calendars',
   AttributeDefinitions: [
     { AttributeName: 'createdTimestamp', AttributeType: 'S' },
-    { AttributeName: 'calendar', AttributeType: 'M' },
+    { AttributeName: 'calendar', AttributeType: 'S' },
     { AttributeName: 'createdBy', AttributeType: 'S' },
     { AttributeName: 'updatedTimestamp', AttributeType: 'S' },
     { AttributeName: 'updatedBy', AttributeType: 'S' },
@@ -10,7 +12,7 @@ export const calendarTableParams = {
   ],
   KeySchema: [
     { AttributeName: 'createdTimestamp', KeyType: 'RANGE' },
-    { AttributeName: 'createdBy', AttributeType: 'HASH' }
+    { AttributeName: 'createdBy', KeyType: 'HASH' }
   ],
   ProvisionedThroughput: {
     ReadCapacityUnits: 100,

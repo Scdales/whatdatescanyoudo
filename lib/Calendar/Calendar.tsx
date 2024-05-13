@@ -1,6 +1,6 @@
 'use client'
 
-import isSameDay from 'date-fns/isSameDay'
+import { isSameDay } from 'date-fns'
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
 import { PickersDay } from '@mui/x-date-pickers/PickersDay'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -11,12 +11,26 @@ import { PickersActionBar } from '@mui/x-date-pickers'
 import { useSnackbar } from 'notistack'
 import { format } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '../constants'
+import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
+import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 
-export default function Calendar({ startDate, endDate, owner = '', selectedDates = {}, userSelectedDates = [] }) {
+export default function Calendar({
+  startDate,
+  endDate,
+  owner = '',
+  selectedDates = {},
+  userSelectedDates = []
+}: {
+  startDate: Date
+  endDate: Date
+  owner: string | null
+  selectedDates: { [key: string]: number }
+  userSelectedDates: Date[]
+}) {
   console.log(selectedDates, userSelectedDates)
   const { enqueueSnackbar } = useSnackbar()
   const [selectedDays, setSelectedDays] = useState([...userSelectedDates])
-  function handleDayClick(day) {
+  function handleDayClick(day: Date) {
     // console.log('CHANGE:', day)
     const isSelected = selectedDays.find((selectedDay) => isSameDay(day, selectedDay))
 
@@ -27,7 +41,7 @@ export default function Calendar({ startDate, endDate, owner = '', selectedDates
     }
   }
 
-  const renderDay = (props) => {
+  const renderDay = (props: PickersDayProps<Date>) => {
     const isDisabled = props.disabled
     const isSelected = selectedDays.findIndex((selectedDay) => isSameDay(props.day, selectedDay)) > -1
     const selectedCount = isDisabled ? 0 : selectedDates?.[format(props.day, DATE_PAYLOAD_FORMAT) || 0]
@@ -77,7 +91,7 @@ export default function Calendar({ startDate, endDate, owner = '', selectedDates
     setSelectedDays([])
   }
 
-  const renderActions = (props) => {
+  const renderActions = (props: PickersActionBarProps) => {
     // console.log(props)
     return <PickersActionBar {...props} actions={['clear', 'accept']} onAccept={onAccept} onClear={onClear} />
   }

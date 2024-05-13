@@ -8,7 +8,7 @@ const dbClient = new DynamoDBClient({
 export const listTables = async () => {
   try {
     const results = await dbClient.send(new ListTablesCommand())
-    results.TableNames.forEach(function (item) {
+    results?.TableNames?.forEach(function (item) {
       console.log(item)
     })
   } catch (err) {

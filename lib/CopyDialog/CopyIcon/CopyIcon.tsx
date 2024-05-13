@@ -2,7 +2,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import { useState } from 'react'
 
-const CopyIcon = ({ onClick }) => {
+const CopyIcon = ({ onClick }: { onClick: () => void }) => {
   const [hover, setHover] = useState({})
   return (
     <div

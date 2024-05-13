@@ -9,15 +9,31 @@ import home from '../styles/Home.module.css'
 import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { parse } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '@/lib/constants'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function Home({ searchParams }) {
+type TCalendar = {
+  startDate: Date | null
+  endDate: Date | null
+  owner: string | null
+  selectedDates: { [key: string]: number }
+  userSelectedDates: Date[]
+}
+
+export type TPayload = {
+  n: string
+  e: string
+  l: string
+}
+
+export default function Home() {
+  const searchParams = useSearchParams()
+  const s = searchParams.get('s')
   const router = useRouter()
   const [openDialog, setOpenDialog] = useState(false)
   const [loading, setLoading] = useState(true)
   const [copyText, setCopyText] = useState('')
   const [openCopyDialog, setCopyOpenDialog] = useState(false)
-  const [calendarInfo, setCalendarInfo] = useState({
+  const [calendarInfo, setCalendarInfo] = useState<TCalendar>({
     startDate: null,
     endDate: null,
     owner: null,
@@ -25,20 +41,20 @@ export default function Home({ searchParams }) {
     userSelectedDates: []
   })
 
-  const getCalendarInfo = (calendar) => {
+  const getCalendarInfo = (calendar: any): TCalendar => {
     return {
       startDate: parse(calendar.startDate, DATE_PAYLOAD_FORMAT, new Date()),
       endDate: parse(calendar.endDate, DATE_PAYLOAD_FORMAT, new Date()),
       owner: calendar.owner,
       selectedDates: calendar.selectedDates,
-      userSelectedDates: calendar.userSelectedDates.map((date) => parse(date, DATE_PAYLOAD_FORMAT, new Date()))
+      userSelectedDates: calendar.userSelectedDates.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date()))
     }
   }
 
   useEffect(() => {
     if (loading) {
       try {
-        fetch(`/p${searchParams?.s ? `?s=${searchParams.s}` : ''}`)
+        fetch(`/p${s ? `?s=${s}` : ''}`)
           .then((res) => {
             if (res.status === 200) {
               return res.json()
@@ -49,7 +65,8 @@ export default function Home({ searchParams }) {
             if (!data) {
               setOpenDialog(true)
             } else {
-              setCalendarInfo(getCalendarInfo(data))
+              const calendarData = getCalendarInfo(data)
+              setCalendarInfo(calendarData)
             }
           })
           .finally(() => {
@@ -60,9 +77,9 @@ export default function Home({ searchParams }) {
         enqueueSnackbar('Error fetching', { variant: 'error' })
       }
     }
-  }, [loading, searchParams?.s])
+  }, [loading, s])
 
-  const save = async (payload) => {
+  const save = async (payload: TPayload) => {
     try {
       const res = await fetch('/p', {
         method: 'post',
@@ -85,6 +102,7 @@ export default function Home({ searchParams }) {
             userSelectedDates: []
           })
         )
+
         router.push(`/${copyText}`)
       }
       setOpenDialog(false)

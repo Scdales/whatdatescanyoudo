@@ -7,7 +7,7 @@ const key = crypto.scryptSync(password, process.env.SALT, 32)
 const iv = Buffer.alloc(16, 0)
 const lz = require('lz-string')
 
-export function encrypt(data) {
+export function encrypt(data: any) {
   const text = JSON.stringify(data)
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv)
   let encrypted = cipher.update(text)
@@ -17,7 +17,7 @@ export function encrypt(data) {
   return compressedString
 }
 
-export function decrypt(text) {
+export function decrypt(text: string) {
   const decompressedString = lz.decompressFromEncodedURIComponent(text)
   let encryptedText = Buffer.from(decompressedString, 'hex')
   let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv)

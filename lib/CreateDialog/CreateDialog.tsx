@@ -3,14 +3,15 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import { DatePicker } from '@mui/x-date-pickers'
-import { useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { DATE_DISPLAY_FORMAT, DATE_PAYLOAD_FORMAT } from '../constants'
 import { format } from 'date-fns'
+import { TPayload } from '@/app/page'
 
-const CreateDialog = ({ open, save }) => {
-  const [startDate, setStartDate] = useState(null)
-  const [endDate, setEndDate] = useState(null)
+const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TPayload) => void }) => {
+  const [startDate, setStartDate] = useState<Date | null>(null)
+  const [endDate, setEndDate] = useState<Date | null>(null)
   const [name, setName] = useState('')
 
   const createPayload = () => {
@@ -40,7 +41,7 @@ const CreateDialog = ({ open, save }) => {
             <DatePicker
               sx={{ my: 2 }}
               label="Earliest Date"
-              maxDate={endDate || null}
+              maxDate={endDate || undefined}
               value={startDate}
               onChange={setStartDate}
               format={DATE_DISPLAY_FORMAT}
@@ -48,7 +49,7 @@ const CreateDialog = ({ open, save }) => {
             <DatePicker
               sx={{ my: 2 }}
               label="Latest Date"
-              minDate={startDate || null}
+              minDate={startDate || undefined}
               value={endDate}
               onChange={setEndDate}
               format={DATE_DISPLAY_FORMAT}

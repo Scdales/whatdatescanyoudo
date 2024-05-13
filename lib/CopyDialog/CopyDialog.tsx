@@ -4,7 +4,7 @@ import CopyIcon from './CopyIcon/CopyIcon'
 import { useSnackbar } from 'notistack'
 import ClearIcon from './ClearIcon/ClearIcon'
 
-const CopyDialog = ({ open, text = '', onClose }) => {
+const CopyDialog = ({ open, text = '', onClose }: { open: boolean; text: string; onClose: () => void }) => {
   const { enqueueSnackbar } = useSnackbar()
   const onClick = async () => {
     await navigator.clipboard.writeText(text)

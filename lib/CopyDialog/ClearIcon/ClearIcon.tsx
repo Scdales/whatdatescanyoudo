@@ -2,7 +2,7 @@
 import { default as ClearIconMui } from '@mui/icons-material/Clear'
 import { useState } from 'react'
 
-const ClearIcon = ({ onClick }) => {
+const ClearIcon = ({ onClick }: {onClick: () => void}) => {
   const [hover, setHover] = useState({})
   return (
     <div

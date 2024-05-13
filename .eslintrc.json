@@ -20,6 +20,7 @@
         "avoidEscape": true,
         "allowTemplateLiterals": false
       }
-    ]
+    ],
+    "no-unused-vars": "off"
   }
 }
