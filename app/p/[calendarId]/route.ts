@@ -1,13 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, GetCommand, PutCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb'
+import { NextRequest } from 'next/server'
 import { getCalendar } from '@/lib/utils/db/calendars'
-
-const dbClient = new DynamoDBClient({
-  region: 'eu-west-1',
-  endpoint: process.env.DYNAMO_HOST
-})
-const docClient = DynamoDBDocumentClient.from(dbClient)
 
 export async function GET(req: NextRequest, ctx: { params: { calendarId: string } }) {
   const {
