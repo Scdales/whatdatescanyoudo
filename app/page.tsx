@@ -10,6 +10,7 @@ import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { parse } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '@/lib/constants'
 import { useRouter, useSearchParams } from 'next/navigation'
+import * as uuid from 'uuid'
 
 type TCalendar = {
   startDate: Date | null
@@ -20,14 +21,15 @@ type TCalendar = {
 }
 
 export type TPayload = {
-  n: string
-  e: string
-  l: string
+  title: string
+  owner: string
+  startDate: string
+  endDate: string
 }
 
 export default function Home() {
   const searchParams = useSearchParams()
-  const s = searchParams.get('s')
+  const calendarId = searchParams.get('s')
   const router = useRouter()
   const [openDialog, setOpenDialog] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -41,20 +43,20 @@ export default function Home() {
     userSelectedDates: []
   })
 
-  const getCalendarInfo = (calendar: any): TCalendar => {
+  const parseCalendarInfo = (calendar: any): TCalendar => {
     return {
       startDate: parse(calendar.startDate, DATE_PAYLOAD_FORMAT, new Date()),
       endDate: parse(calendar.endDate, DATE_PAYLOAD_FORMAT, new Date()),
       owner: calendar.owner,
-      selectedDates: calendar.selectedDates,
-      userSelectedDates: calendar.userSelectedDates.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date()))
+      selectedDates: calendar?.selectedDates,
+      userSelectedDates: calendar?.userSelectedDates?.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date()))
     }
   }
 
   useEffect(() => {
-    if (loading) {
+    if (loading && calendarId && uuid.validate(calendarId)) {
       try {
-        fetch(`/p${s ? `?s=${s}` : ''}`)
+        fetch(`/p/${calendarId}`)
           .then((res) => {
             if (res.status === 200) {
               return res.json()
@@ -65,7 +67,7 @@ export default function Home() {
             if (!data) {
               setOpenDialog(true)
             } else {
-              const calendarData = getCalendarInfo(data)
+              const calendarData = parseCalendarInfo(data)
               setCalendarInfo(calendarData)
             }
           })
@@ -76,8 +78,11 @@ export default function Home() {
         console.error(e)
         enqueueSnackbar('Error fetching', { variant: 'error' })
       }
+    } else if (loading) {
+      setLoading(false)
+      setOpenDialog(true)
     }
-  }, [loading, s])
+  }, [loading, calendarId])
 
   const save = async (payload: TPayload) => {
     try {
@@ -89,15 +94,15 @@ export default function Home() {
         body: JSON.stringify(payload)
       })
       if (res.status === 200) {
-        const data = await res.json()
-        console.log(data)
-        setCopyText(`?s=${data.url}`)
+        const calendarId = await res.json()
+        console.log(calendarId)
+        setCopyText(`?s=${calendarId}`)
         setCopyOpenDialog(true)
         setCalendarInfo(
-          getCalendarInfo({
-            startDate: data.startDate,
-            endDate: data.endDate,
-            owner: data.owner,
+          parseCalendarInfo({
+            startDate: payload.startDate,
+            endDate: payload.endDate,
+            owner: payload.owner,
             selectedDates: {},
             userSelectedDates: []
           })

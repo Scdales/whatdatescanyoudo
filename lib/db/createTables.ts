@@ -9,8 +9,16 @@ const dbClient = new DynamoDBClient({
 export const createTables = async () => {
   try {
     for (let i = 0; i < tableParams.length; i++) {
-      const data = await dbClient.send(new CreateTableCommand(tableParams[i]))
-      console.log('Success', data)
+      try {
+        await dbClient.send(new CreateTableCommand(tableParams[i]))
+        console.log('created', tableParams[i].TableName)
+      } catch (err: any) {
+        if (!err.toString().includes('Cannot create preexisting table')) {
+          throw err
+        } else {
+          console.log(tableParams[i].TableName, 'already exists')
+        }
+      }
     }
   } catch (err) {
     console.log('Error', err)
