@@ -3,6 +3,7 @@ import createTables from './lib/db/createTables'
 
 export async function register() {
   await listTables()
+  console.log('-- end list tables')
   await createTables()
-  console.log('Done')
+  console.log('-- end create tables')
 }
