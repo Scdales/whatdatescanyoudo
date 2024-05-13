@@ -1,0 +1,18 @@
+.MuiPickersCalendarHeader-label {
+    color: black;
+}
+
+.day-number {
+    background-color: #5a37ff;
+    color: white;
+    border-radius: 50%;
+    font-size: 10px;
+    width: 13px;
+    height: 13px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    padding-left: 1px;
+}
