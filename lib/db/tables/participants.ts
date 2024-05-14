@@ -3,15 +3,13 @@ import { CreateTableInput } from '@aws-sdk/client-dynamodb'
 export const calendarParticipants: CreateTableInput = {
   TableName: 'CalendarParticipants',
   AttributeDefinitions: [
-    { AttributeName: 'CalendarId', AttributeType: 'S' },
+    { AttributeName: 'CalendarId', AttributeType: 'S' }
     // ParticipantId
     // CreatedAt
     // ParticipantName
     // IsOwner
   ],
-  KeySchema: [
-    { AttributeName: 'CalendarId', KeyType: 'HASH' }
-  ],
+  KeySchema: [{ AttributeName: 'CalendarId', KeyType: 'HASH' }],
   ProvisionedThroughput: {
     ReadCapacityUnits: 5,
     WriteCapacityUnits: 5
@@ -21,16 +19,16 @@ export const calendarParticipants: CreateTableInput = {
 export const participantDates: CreateTableInput = {
   TableName: 'ParticipantDates',
   AttributeDefinitions: [
-    { AttributeName: 'ParticipantId', AttributeType: 'S' }
-    // ParticipantDate
+    { AttributeName: 'ParticipantId', AttributeType: 'S' },
+    { AttributeName: 'ParticipantDate', AttributeType: 'S' }
     // CalendarId
     // ParticipantName
     // CreatedAt
     // IsDeleted
-    // DeletedTimestamp
   ],
   KeySchema: [
-    { AttributeName: 'ParticipantId', KeyType: 'HASH' }
+    { AttributeName: 'ParticipantId', KeyType: 'HASH' },
+    { AttributeName: 'ParticipantDate', KeyType: 'RANGE' }
   ],
   ProvisionedThroughput: {
     ReadCapacityUnits: 5,

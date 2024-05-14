@@ -18,6 +18,7 @@ type TCalendar = {
   owner: string | null
   selectedDates: { [key: string]: number }
   userSelectedDates: Date[]
+  calendarKey: string
 }
 
 export type TPayload = {
@@ -29,7 +30,7 @@ export type TPayload = {
 
 export default function Home() {
   const searchParams = useSearchParams()
-  const calendarId = searchParams.get('s')
+  const calendarKey = searchParams.get('s') || ''
   const router = useRouter()
   const [openDialog, setOpenDialog] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -40,7 +41,8 @@ export default function Home() {
     endDate: null,
     owner: null,
     selectedDates: {},
-    userSelectedDates: []
+    userSelectedDates: [],
+    calendarKey: calendarKey
   })
 
   const parseCalendarInfo = (calendar: any): TCalendar => {
@@ -49,14 +51,15 @@ export default function Home() {
       endDate: parse(calendar.endDate, DATE_PAYLOAD_FORMAT, new Date()),
       owner: calendar.owner,
       selectedDates: calendar?.selectedDates,
-      userSelectedDates: calendar?.userSelectedDates?.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date()))
+      userSelectedDates: calendar?.userSelectedDates?.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date())),
+      calendarKey: calendar.calendarKey
     }
   }
 
   useEffect(() => {
-    if (loading && calendarId && uuid.validate(calendarId)) {
+    if (loading && calendarKey) {
       try {
-        fetch(`/p/${calendarId}`)
+        fetch(`/c/${calendarKey}`)
           .then((res) => {
             if (res.status === 200) {
               return res.json()
@@ -67,7 +70,7 @@ export default function Home() {
             if (!data) {
               setOpenDialog(true)
             } else {
-              const calendarData = parseCalendarInfo(data)
+              const calendarData = parseCalendarInfo({ ...data, calendarKey })
               setCalendarInfo(calendarData)
             }
           })
@@ -82,11 +85,11 @@ export default function Home() {
       setLoading(false)
       setOpenDialog(true)
     }
-  }, [loading, calendarId])
+  }, [loading, calendarKey])
 
   const save = async (payload: TPayload) => {
     try {
-      const res = await fetch('/p', {
+      const res = await fetch('/c', {
         method: 'post',
         headers: {
           'Content-Type': 'application/json'
@@ -94,9 +97,9 @@ export default function Home() {
         body: JSON.stringify(payload)
       })
       if (res.status === 200) {
-        const calendarId = await res.json()
-        console.log(calendarId)
-        setCopyText(`?s=${calendarId}`)
+        const calendarKey = await res.json()
+        console.log(calendarKey)
+        setCopyText(`?s=${calendarKey}`)
         setCopyOpenDialog(true)
         setCalendarInfo(
           parseCalendarInfo({
@@ -104,11 +107,12 @@ export default function Home() {
             endDate: payload.endDate,
             owner: payload.owner,
             selectedDates: {},
-            userSelectedDates: []
+            userSelectedDates: [],
+            calendarKey: calendarKey
           })
         )
 
-        router.push(`/${copyText}`)
+        // router.push(`/${copyText}`)
       }
       setOpenDialog(false)
     } catch (e) {
@@ -139,6 +143,7 @@ export default function Home() {
             owner={calendarInfo.owner}
             selectedDates={calendarInfo.selectedDates}
             userSelectedDates={calendarInfo.userSelectedDates}
+            calendarKey={calendarInfo.calendarKey}
           />
         ) : null}
       </SnackbarProvider>

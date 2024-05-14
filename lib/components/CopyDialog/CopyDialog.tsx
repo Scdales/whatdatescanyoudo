@@ -7,7 +7,7 @@ import ClearIcon from './ClearIcon/ClearIcon'
 const CopyDialog = ({ open, text = '', onClose }: { open: boolean; text: string; onClose: () => void }) => {
   const { enqueueSnackbar } = useSnackbar()
   const onClick = async () => {
-    await navigator.clipboard.writeText(text)
+    await navigator.clipboard.writeText(`${window.location.hostname}${text}`)
     enqueueSnackbar('Copied Link')
   }
 

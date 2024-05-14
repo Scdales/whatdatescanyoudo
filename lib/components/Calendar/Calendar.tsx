@@ -19,24 +19,38 @@ export default function Calendar({
   endDate,
   owner = '',
   selectedDates = {},
-  userSelectedDates = []
+  userSelectedDates = [],
+  calendarKey
 }: {
   startDate: Date
   endDate: Date
   owner: string | null
   selectedDates: { [key: string]: number }
   userSelectedDates: Date[]
+  calendarKey: string
 }) {
   console.log(selectedDates, userSelectedDates)
   const { enqueueSnackbar } = useSnackbar()
   const [selectedDays, setSelectedDays] = useState([...userSelectedDates])
-  function handleDayClick(day: Date) {
-    // console.log('CHANGE:', day)
-    const isSelected = selectedDays.find((selectedDay) => isSameDay(day, selectedDay))
 
+  function handleDayClick(day: Date) {
+    const isSelected = selectedDays.find((selectedDay) => isSameDay(day, selectedDay))
+    const date = format(day, DATE_PAYLOAD_FORMAT)
     if (isSelected) {
+      fetch(`/p/${calendarKey}/${date}`, {
+        method: 'delete',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       setSelectedDays((selectedDays) => selectedDays.filter((selectedDay) => !isSameDay(selectedDay, day)))
     } else {
+      fetch(`/p/${calendarKey}/${date}`, {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       setSelectedDays((selectedDays) => [...selectedDays, day])
     }
   }
@@ -92,8 +106,7 @@ export default function Calendar({
   }
 
   const renderActions = (props: PickersActionBarProps) => {
-    // console.log(props)
-    return <PickersActionBar {...props} actions={['clear', 'accept']} onAccept={onAccept} onClear={onClear} />
+    return <PickersActionBar {...props} actions={['accept']} onAccept={onAccept} />
   }
 
   return (
