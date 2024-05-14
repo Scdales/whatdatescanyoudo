@@ -6,7 +6,7 @@
     background-color: #5a37ff;
     color: white;
     border-radius: 50%;
-    font-size: 10px;
+    font-size: 9px;
     width: 13px;
     height: 13px;
     position: absolute;
@@ -15,4 +15,10 @@
     display: flex;
     justify-content: center;
     padding-left: 1px;
+}
+
+.header-title {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
 }

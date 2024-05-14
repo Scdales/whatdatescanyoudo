@@ -13,13 +13,15 @@ export function encrypt(data: any) {
   let encrypted = cipher.update(text)
   encrypted = Buffer.concat([encrypted, cipher.final()])
   const encryptedString = encrypted.toString('hex')
-  const compressedString = compressToEncodedURIComponent(encryptedString)
-  return compressedString
+  // const compressedString = compressToEncodedURIComponent(encryptedString)
+  // return compressedString
+  return encryptedString
 }
 
 export function decrypt(text: string) {
-  const decompressedString = lz.decompressFromEncodedURIComponent(text)
-  let encryptedText = Buffer.from(decompressedString, 'hex')
+  // const decompressedString = lz.decompressFromEncodedURIComponent(text)
+  // let encryptedText = Buffer.from(decompressedString, 'hex')
+  let encryptedText = Buffer.from(text, 'hex')
   let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv)
   let decrypted = decipher.update(encryptedText)
   decrypted = Buffer.concat([decrypted, decipher.final()])

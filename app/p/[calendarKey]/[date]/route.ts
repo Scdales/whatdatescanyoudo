@@ -1,5 +1,5 @@
 import { editParticipantDate } from '@/lib/utils/db/participantDates'
-import { decryptCalPar } from '@/app/p/[calendarKey]/route'
+import { decryptCalPar } from '@/lib/utils/api/calendar'
 
 export async function PUT(req: Request, ctx: { params: { calendarKey: string; date: string } }) {
   const {
@@ -10,7 +10,7 @@ export async function PUT(req: Request, ctx: { params: { calendarKey: string; da
     await editParticipantDate(calendarId, participantId, date, false)
     return Response.json('OK', { status: 201 })
   }
-  new Response(undefined, { status: 400 })
+  new Response('', { status: 400 })
 }
 
 export async function DELETE(req: Request, ctx: { params: { calendarKey: string; date: string } }) {
@@ -22,5 +22,5 @@ export async function DELETE(req: Request, ctx: { params: { calendarKey: string;
     await editParticipantDate(calendarId, participantId, date, true)
     return new Response('OK', { status: 200 })
   }
-  return new Response(undefined, { status: 400 })
+  return new Response('', { status: 400 })
 }

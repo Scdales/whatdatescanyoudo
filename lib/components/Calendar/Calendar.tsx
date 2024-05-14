@@ -15,13 +15,19 @@ import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/Pick
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 import { useSearchParams } from 'next/navigation'
 import { TCalendar } from '@/app/page'
-import {getSelectedCount} from "@/lib/utils/calendar";
+import { getSelectedCount } from '@/lib/utils/calendar'
 
 export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const searchParams = useSearchParams()
   const calendarKey = searchParams.get('s') || ''
   const { enqueueSnackbar } = useSnackbar()
-  const participantSelectedDates = calendar.participants.find((p) => p.participantId === calendar.participantId)?.dates || []
+  const calendarSansParticipant: TCalendar = {
+    ...calendar,
+    participants: calendar.participants.filter((p) => p.participantId !== calendar.participantId)
+  }
+  const participant = calendar.participants.find((p) => p.participantId === calendar.participantId)
+  const participantName = participant?.participantName || ''
+  const participantSelectedDates = participant?.dates || []
   const parsedSelectedDates = participantSelectedDates.filter((d) => !d.isDeleted).map((d) => d.participantDate)
   const [selectedDays, setSelectedDays] = useState(parsedSelectedDates)
 
@@ -50,7 +56,7 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const renderDay = (props: PickersDayProps<Date>) => {
     const isDisabled = props.disabled
     const isSelected = selectedDays.findIndex((selectedDay) => isSameDay(props.day, selectedDay)) > -1
-    const selectedCount = getSelectedCount(props.day, calendar)
+    let selectedCount = getSelectedCount(props.day, calendarSansParticipant)
     return (
       <PickersDay {...props} selected={isSelected} onDaySelect={handleDayClick}>
         {props.day.getDate()}
@@ -65,13 +71,15 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
     return (
       <div
         className="MuiPickersToolbar-root MuiPickersLayout-toolbar"
-        style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
+        style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', borderBottom: '1px solid #ddd6d6' }}
       >
-        <h4>{`${calendar.owner}'s Calendar`}</h4>
-        <h6>{calendar.title}</h6>
-        <p>
+        <div style={{ fontSize: '24px' }} className="header-title">{`${calendar.owner}'s Calendar`}</div>
+        <div style={{ fontSize: '16px', padding: '8px' }} className="header-title">
+          {calendar.title}
+        </div>
+        <div style={{ fontSize: '12px', justifyContent: 'flex-end' }} className="header-title">
           {format(calendar.startDate, 'do MMM yy')} to {format(calendar.endDate, 'do MMM yy')}
-        </p>
+        </div>
       </div>
     )
   }
@@ -107,12 +115,15 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <StaticDatePicker
-        minDate={calendar.startDate}
-        maxDate={calendar.endDate}
-        slots={{ day: renderDay, toolbar: renderToolbar, actionBar: renderActions }}
-        views={['day']}
-      />
+      <div style={{ position: 'relative' }}>
+        <div style={{ top: '-10%', width: '100%', textAlign: 'center ', position: 'absolute' }}>Hi {participantName}!</div>
+        <StaticDatePicker
+          minDate={calendar.startDate}
+          maxDate={calendar.endDate}
+          slots={{ day: renderDay, toolbar: renderToolbar, actionBar: renderActions }}
+          views={['day']}
+        />
+      </div>
     </LocalizationProvider>
   )
 }

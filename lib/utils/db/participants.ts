@@ -25,13 +25,12 @@ export const getParticipants = async (calendarId: string): Promise<TGetParticipa
     TableName: TABLE_NAME
   }
   const res = await dbClient.send(new QueryCommand(params))
-  const participants = res.Items?.map((item) => ({
+  return res.Items?.map((item) => ({
     participantId: item.ParticipantId.S,
     participantName: item.ParticipantName.S,
     isOwner: item.IsOwner.BOOL,
     createdAt: item.CreatedAt.N
   })) as TGetParticipant[]
-  return participants
 }
 
 export const createParticipant = async (

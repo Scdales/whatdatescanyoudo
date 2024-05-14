@@ -7,9 +7,9 @@ import { useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { DATE_DISPLAY_FORMAT, DATE_PAYLOAD_FORMAT } from '../../constants'
 import { format } from 'date-fns'
-import { TPayload } from '@/app/page'
+import { TOwnerPayload } from '@/app/page'
 
-const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TPayload) => void }) => {
+const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TOwnerPayload) => void }) => {
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
   const [owner, setOwner] = useState('')
@@ -29,7 +29,7 @@ const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TPayload)
 
   return (
     <Dialog open={open}>
-      <DialogTitle>Create A Calendar</DialogTitle>
+      <DialogTitle style={{ textAlign: 'center' }}>Create A Calendar</DialogTitle>
       <DialogContent>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>

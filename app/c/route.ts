@@ -1,14 +1,10 @@
 import { NextRequest } from 'next/server'
 import { createCalendar, deleteCalendar, editCalendarName, getCalendar } from '@/lib/utils/db/calendars'
 import { createParticipant } from '@/lib/utils/db/participants'
-import { encrypt, decrypt } from '@/lib/utils/encrypt'
-
-export const encryptCalPar = (calendarId: string, participantId: string): string => {
-  return encrypt({ calendarId, participantId })
-}
+import { encryptCalPar } from '@/lib/utils/api/calendar'
 
 export async function GET(req: NextRequest) {
-  return new Response(undefined, { status: 418 })
+  return new Response('', { status: 418 })
 }
 
 export async function POST(req: Request) {
@@ -16,8 +12,9 @@ export async function POST(req: Request) {
   if (title && owner && startDate && endDate) {
     const calRes = await createCalendar(title, owner, startDate, endDate)
     const parRes = await createParticipant(calRes.calendarId, owner, true)
-    const calendarParticipantKey = encryptCalPar(calRes.calendarId, parRes.participantId)
-    return Response.json(calendarParticipantKey)
+    const calendarKey = encryptCalPar(calRes.calendarId, parRes.participantId)
+    const shareableKey = encryptCalPar(calRes.calendarId)
+    return Response.json({ calendarKey, shareableKey })
   }
-  return new Response(undefined, { status: 400 })
+  return new Response('', { status: 400 })
 }

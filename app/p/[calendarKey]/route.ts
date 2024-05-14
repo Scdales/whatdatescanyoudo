@@ -1,19 +1,35 @@
 import { NextRequest } from 'next/server'
-import { decrypt } from '@/lib/utils/encrypt'
-import { getParticipantDates } from '@/lib/utils/db/participantDates'
+import { decryptCalPar, encryptCalPar } from '@/lib/utils/api/calendar'
+import { createParticipant } from '@/lib/utils/db/participants'
 
-export const decryptCalPar = (encryptedString: string): { calendarId: string; participantId: string } => {
-  return decrypt(encryptedString)
-}
+// export async function GET(req: NextRequest, ctx: { params: { calendarKey: string } }) {
+//   const {
+//     params: { calendarKey }
+//   } = ctx
+//   if (calendarKey) {
+//     const { participantId } = decryptCalPar(calendarKey)
+//     const participantDates = await getParticipantDates(participantId)
+//     return Response.json(participantDates, { status: 200 })
+//   }
+//   new Response('', { status: 400 })
+// }
 
-export async function GET(req: NextRequest, ctx: { params: { calendarKey: string } }) {
+export async function POST(req: NextRequest, ctx: { params: { calendarKey: string } }) {
   const {
     params: { calendarKey }
   } = ctx
   if (calendarKey) {
-    const { participantId } = decryptCalPar(calendarKey)
-    const res = getParticipantDates(participantId)
-    return Response.json('OK', { status: 200 })
+    const { participantId, calendarId } = decryptCalPar(calendarKey)
+    const { participantName } = await req.json()
+    if (participantId) {
+      console.error('Participant', participantId, 'exists')
+    } else if (participantName) {
+      const { participantId } = await createParticipant(calendarId, participantName)
+      const calendarKey = encryptCalPar(calendarId, participantId)
+      return Response.json({ calendarKey, shareableKey: '' }, { status: 200 })
+    } else {
+      console.error('name not provided')
+    }
   }
-  new Response(undefined, { status: 400 })
+  new Response('', { status: 400 })
 }

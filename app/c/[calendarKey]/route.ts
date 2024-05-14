@@ -1,12 +1,8 @@
 import { NextRequest } from 'next/server'
 import { deleteCalendar, editCalendarName, getCalendar, TGetCalendar } from '@/lib/utils/db/calendars'
-import { decrypt } from '@/lib/utils/encrypt'
 import { getParticipantDates, TGetParticipantDate } from '@/lib/utils/db/participantDates'
 import { getParticipants, TGetParticipant } from '@/lib/utils/db/participants'
-
-export const decryptCalPar = (encryptedString: string): { calendarId: string; participantId: string } => {
-  return decrypt(encryptedString)
-}
+import { decryptCalPar } from '@/lib/utils/api/calendar'
 
 export type TCalendarGetResponse = TGetCalendar & {
   participants: (TGetParticipant & { dates: TGetParticipantDate[] })[]
@@ -28,7 +24,7 @@ export async function GET(req: NextRequest, ctx: { params: { calendarKey: string
     }
     return Response.json(calendarWithParticipants)
   }
-  return new Response(undefined, { status: 400 })
+  return new Response('', { status: 400 })
 }
 
 export async function PUT(req: Request, ctx: { params: { calendarKey: string } }) {
@@ -41,7 +37,7 @@ export async function PUT(req: Request, ctx: { params: { calendarKey: string } }
     const res = await editCalendarName(calendarId, title)
     return Response.json(res, { status: 201 })
   }
-  new Response(undefined, { status: 400 })
+  new Response('', { status: 400 })
 }
 
 export async function DELETE(req: Request, ctx: { params: { calendarKey: string } }) {
@@ -52,7 +48,7 @@ export async function DELETE(req: Request, ctx: { params: { calendarKey: string 
   if (calendarKey && id) {
     const { calendarId } = decryptCalPar(calendarKey)
     await deleteCalendar(calendarId)
-    return new Response(undefined, { status: 204 })
+    return new Response('', { status: 204 })
   }
-  return new Response(undefined, { status: 400 })
+  return new Response('', { status: 400 })
 }
