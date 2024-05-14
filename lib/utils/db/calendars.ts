@@ -16,10 +16,10 @@ const dbClient = new DynamoDBClient({
 
 const TABLE_NAME = 'Calendars'
 
-type TGetCalendar = {
+export type TGetCalendar = {
   title: string
   owner: string
-  id: string
+  calendarId: string
   startDate: string
   endDate: string
 }
@@ -37,7 +37,7 @@ export const getCalendar = async (calendarId: string): Promise<TGetCalendar> => 
   return {
     title: calendar.Item?.CalendarTitle.S,
     owner: calendar.Item?.Owner.S,
-    id: calendar.Item?.CalendarId.S,
+    calendarId: calendar.Item?.CalendarId.S,
     startDate: calendar.Item?.StartDate.S,
     endDate: calendar.Item?.EndDate.S
   } as TGetCalendar

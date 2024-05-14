@@ -8,6 +8,7 @@ export const calendarTableParams: CreateTableInput = {
     // CalendarTitle
     // StartDate
     // EndDate
+    // Participants
   ],
   KeySchema: [{ AttributeName: 'CalendarId', KeyType: 'HASH' }],
   ProvisionedThroughput: {

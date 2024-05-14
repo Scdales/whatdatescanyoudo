@@ -13,25 +13,16 @@ import { format } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '../../constants'
 import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
+import { useSearchParams } from 'next/navigation'
+import { TCalendar } from '@/app/page'
 
-export default function Calendar({
-  startDate,
-  endDate,
-  owner = '',
-  selectedDates = {},
-  userSelectedDates = [],
-  calendarKey
-}: {
-  startDate: Date
-  endDate: Date
-  owner: string | null
-  selectedDates: { [key: string]: number }
-  userSelectedDates: Date[]
-  calendarKey: string
-}) {
-  console.log(selectedDates, userSelectedDates)
+export default function Calendar({ calendar }: { calendar: TCalendar }) {
+  const searchParams = useSearchParams()
+  const calendarKey = searchParams.get('s') || ''
   const { enqueueSnackbar } = useSnackbar()
-  const [selectedDays, setSelectedDays] = useState([...userSelectedDates])
+  const participantSelectedDates = calendar.participants.find((p) => p.participantId === calendar.participantId)?.dates || []
+  const parsedSelectedDates = participantSelectedDates.filter((d) => !d.isDeleted).map((d) => d.participantDate)
+  const [selectedDays, setSelectedDays] = useState(parsedSelectedDates)
 
   function handleDayClick(day: Date) {
     const isSelected = selectedDays.find((selectedDay) => isSameDay(day, selectedDay))
@@ -58,7 +49,8 @@ export default function Calendar({
   const renderDay = (props: PickersDayProps<Date>) => {
     const isDisabled = props.disabled
     const isSelected = selectedDays.findIndex((selectedDay) => isSameDay(props.day, selectedDay)) > -1
-    const selectedCount = isDisabled ? 0 : selectedDates?.[format(props.day, DATE_PAYLOAD_FORMAT) || 0]
+    // const selectedCount = isDisabled ? 0 : selectedDates?.[format(props.day, DATE_PAYLOAD_FORMAT) || 0]
+    const selectedCount = 2
     return (
       <PickersDay {...props} selected={isSelected} onDaySelect={handleDayClick}>
         {props.day.getDate()}
@@ -75,7 +67,7 @@ export default function Calendar({
         className="MuiPickersToolbar-root MuiPickersLayout-toolbar"
         style={{ color: 'black', display: 'flex', justifyContent: 'center' }}
       >
-        <h4>{`${owner}'s Calendar`}</h4>
+        <h4>{`${calendar.owner}'s Calendar`}</h4>
       </div>
     )
   }
@@ -112,8 +104,8 @@ export default function Calendar({
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <StaticDatePicker
-        minDate={startDate}
-        maxDate={endDate}
+        minDate={calendar.startDate}
+        maxDate={calendar.endDate}
         slots={{ day: renderDay, toolbar: renderToolbar, actionBar: renderActions }}
         views={['day']}
       />

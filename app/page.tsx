@@ -10,15 +10,14 @@ import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { parse } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '@/lib/constants'
 import { useRouter, useSearchParams } from 'next/navigation'
-import * as uuid from 'uuid'
+import { TCalendarGetResponse } from '@/app/c/[calendarKey]/route'
+import { TGetParticipant } from '@/lib/utils/db/participants'
+import { TGetParticipantDate } from '@/lib/utils/db/participantDates'
 
-type TCalendar = {
-  startDate: Date | null
-  endDate: Date | null
-  owner: string | null
-  selectedDates: { [key: string]: number }
-  userSelectedDates: Date[]
-  calendarKey: string
+export type TCalendar = Omit<TCalendarGetResponse, 'startDate' | 'endDate' | 'participants'> & {
+  startDate: Date
+  endDate: Date
+  participants: (TGetParticipant & { dates: (Omit<TGetParticipantDate, 'participantDate'> & { participantDate: Date })[] })[]
 }
 
 export type TPayload = {
@@ -36,23 +35,23 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [copyText, setCopyText] = useState('')
   const [openCopyDialog, setCopyOpenDialog] = useState(false)
-  const [calendarInfo, setCalendarInfo] = useState<TCalendar>({
-    startDate: null,
-    endDate: null,
-    owner: null,
-    selectedDates: {},
-    userSelectedDates: [],
-    calendarKey: calendarKey
-  })
+  const [calendarInfo, setCalendarInfo] = useState<TCalendar>()
 
-  const parseCalendarInfo = (calendar: any): TCalendar => {
+  const parseCalendarInfo = (calendar: TCalendarGetResponse): TCalendar => {
     return {
+      ...calendar,
       startDate: parse(calendar.startDate, DATE_PAYLOAD_FORMAT, new Date()),
       endDate: parse(calendar.endDate, DATE_PAYLOAD_FORMAT, new Date()),
       owner: calendar.owner,
-      selectedDates: calendar?.selectedDates,
-      userSelectedDates: calendar?.userSelectedDates?.map((date: string) => parse(date, DATE_PAYLOAD_FORMAT, new Date())),
-      calendarKey: calendar.calendarKey
+      participants: calendar.participants.map((participant) => {
+        return {
+          ...participant,
+          dates: participant.dates.map((date) => ({
+            ...date,
+            participantDate: parse(date.participantDate, DATE_PAYLOAD_FORMAT, new Date())
+          }))
+        }
+      })
     }
   }
 
@@ -62,7 +61,7 @@ export default function Home() {
         fetch(`/c/${calendarKey}`)
           .then((res) => {
             if (res.status === 200) {
-              return res.json()
+              return res.json() as Promise<TCalendarGetResponse>
             }
             return null
           })
@@ -70,7 +69,7 @@ export default function Home() {
             if (!data) {
               setOpenDialog(true)
             } else {
-              const calendarData = parseCalendarInfo({ ...data, calendarKey })
+              const calendarData = parseCalendarInfo(data)
               setCalendarInfo(calendarData)
             }
           })
@@ -101,18 +100,7 @@ export default function Home() {
         console.log(calendarKey)
         setCopyText(`?s=${calendarKey}`)
         setCopyOpenDialog(true)
-        setCalendarInfo(
-          parseCalendarInfo({
-            startDate: payload.startDate,
-            endDate: payload.endDate,
-            owner: payload.owner,
-            selectedDates: {},
-            userSelectedDates: [],
-            calendarKey: calendarKey
-          })
-        )
-
-        // router.push(`/${copyText}`)
+        router.push(`/${copyText}`)
       }
       setOpenDialog(false)
     } catch (e) {
@@ -136,16 +124,7 @@ export default function Home() {
             <CopyDialog open={openCopyDialog} text={copyText} onClose={onCloseCopyDialog} />
           </>
         )}
-        {!loading && calendarInfo.startDate && calendarInfo.endDate ? (
-          <Calendar
-            startDate={calendarInfo.startDate}
-            endDate={calendarInfo.endDate}
-            owner={calendarInfo.owner}
-            selectedDates={calendarInfo.selectedDates}
-            userSelectedDates={calendarInfo.userSelectedDates}
-            calendarKey={calendarInfo.calendarKey}
-          />
-        ) : null}
+        {!loading && calendarInfo?.startDate && calendarInfo?.endDate ? <Calendar calendar={calendarInfo} /> : null}
       </SnackbarProvider>
     </main>
   )

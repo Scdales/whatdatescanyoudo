@@ -1,4 +1,4 @@
-import { editParticipantDate } from '@/lib/utils/db/participants'
+import { editParticipantDate } from '@/lib/utils/db/participantDates'
 import { decryptCalPar } from '@/app/p/[calendarKey]/route'
 
 export async function PUT(req: Request, ctx: { params: { calendarKey: string; date: string } }) {

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { decrypt } from '@/lib/utils/encrypt'
-import { getParticipantDates } from '@/lib/utils/db/participants'
+import { getParticipantDates } from '@/lib/utils/db/participantDates'
 
 export const decryptCalPar = (encryptedString: string): { calendarId: string; participantId: string } => {
   return decrypt(encryptedString)
