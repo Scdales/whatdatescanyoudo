@@ -15,6 +15,7 @@ import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/Pick
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 import { useSearchParams } from 'next/navigation'
 import { TCalendar } from '@/app/page'
+import {getSelectedCount} from "@/lib/utils/calendar";
 
 export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const searchParams = useSearchParams()
@@ -49,8 +50,7 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const renderDay = (props: PickersDayProps<Date>) => {
     const isDisabled = props.disabled
     const isSelected = selectedDays.findIndex((selectedDay) => isSameDay(props.day, selectedDay)) > -1
-    // const selectedCount = isDisabled ? 0 : selectedDates?.[format(props.day, DATE_PAYLOAD_FORMAT) || 0]
-    const selectedCount = 2
+    const selectedCount = getSelectedCount(props.day, calendar)
     return (
       <PickersDay {...props} selected={isSelected} onDaySelect={handleDayClick}>
         {props.day.getDate()}
@@ -65,9 +65,13 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
     return (
       <div
         className="MuiPickersToolbar-root MuiPickersLayout-toolbar"
-        style={{ color: 'black', display: 'flex', justifyContent: 'center' }}
+        style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}
       >
         <h4>{`${calendar.owner}'s Calendar`}</h4>
+        <h6>{calendar.title}</h6>
+        <p>
+          {format(calendar.startDate, 'do MMM yy')} to {format(calendar.endDate, 'do MMM yy')}
+        </p>
       </div>
     )
   }
