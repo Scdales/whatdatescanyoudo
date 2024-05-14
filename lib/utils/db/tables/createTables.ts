@@ -1,9 +1,9 @@
 import { DynamoDBClient, CreateTableCommand } from '@aws-sdk/client-dynamodb'
-import tableParams from './tables'
+import tableParams from './index'
 
 const dbClient = new DynamoDBClient({
   region: 'eu-west-1',
-  endpoint: process.env.DYNAMO_HOST,
+  endpoint: process.env.DYNAMO_HOST
 })
 
 export const createTables = async () => {

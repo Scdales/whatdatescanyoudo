@@ -1,5 +1,5 @@
-import listTables from './lib/db/listTables'
-import createTables from './lib/db/createTables'
+import listTables from './lib/utils/db/tables/listTables'
+import createTables from './lib/utils/db/tables/createTables'
 
 export async function register() {
   console.log('-- start list tables')
