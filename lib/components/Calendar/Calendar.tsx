@@ -116,7 +116,7 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div style={{ position: 'relative' }}>
-        <div style={{ top: '-10%', width: '100%', textAlign: 'center ', position: 'absolute' }}>Hi {participantName}!</div>
+        <div style={{ top: '-10%', width: '100%', textAlign: 'center', position: 'absolute' }}>Hi {participantName}!</div>
         <StaticDatePicker
           minDate={calendar.startDate}
           maxDate={calendar.endDate}
