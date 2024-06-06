@@ -3,6 +3,8 @@ import { deleteCalendar, editCalendarName, getCalendar, TGetCalendar } from '@/l
 import { getParticipantDates, TGetParticipantDate } from '@/lib/utils/db/participantDates'
 import { getParticipants, TGetParticipant } from '@/lib/utils/db/participants'
 import { decryptCalPar } from '@/lib/utils/api/calendar'
+import {ALPHA_NUMERIC_HYPHEN_REGEX} from "@/lib/constants";
+import {isValidAlphaNumeric} from "@/lib/utils/uuid";
 
 export type TCalendarGetResponse = TGetCalendar & {
   participants: (TGetParticipant & { dates: TGetParticipantDate[] })[]
@@ -13,7 +15,7 @@ export async function GET(req: NextRequest, ctx: { params: { calendarKey: string
   const {
     params: { calendarKey }
   } = ctx
-  if (calendarKey) {
+  if (calendarKey && isValidAlphaNumeric(calendarKey)) {
     const { calendarId, participantId } = decryptCalPar(calendarKey)
     const [calendar, participants] = await Promise.all([getCalendar(calendarId), getParticipants(calendarId)])
     const participantDates = await Promise.all(participants.map((participant) => getParticipantDates(participant.participantId)))
@@ -32,7 +34,7 @@ export async function PUT(req: Request, ctx: { params: { calendarKey: string } }
     params: { calendarKey }
   } = ctx
   const { title } = await req.json()
-  if (calendarKey && title) {
+  if (calendarKey && title && isValidAlphaNumeric(calendarKey, title)) {
     const { calendarId } = decryptCalPar(calendarKey)
     const res = await editCalendarName(calendarId, title)
     return Response.json(res, { status: 201 })
@@ -45,7 +47,7 @@ export async function DELETE(req: Request, ctx: { params: { calendarKey: string 
     params: { calendarKey }
   } = ctx
   const { id } = await req.json()
-  if (calendarKey && id) {
+  if (calendarKey && id && isValidAlphaNumeric(calendarKey, id)) {
     const { calendarId } = decryptCalPar(calendarKey)
     await deleteCalendar(calendarId)
     return new Response('', { status: 204 })

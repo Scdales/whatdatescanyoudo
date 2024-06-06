@@ -5,3 +5,7 @@ export function isValidUuid(uuid: string) {
   if (splitUuid.length !== 5) return false
   return splitUuid.every((segment) => segment.match(ALPHA_NUMERIC_HYPHEN_REGEX)?.length)
 }
+
+export function isValidAlphaNumeric(...args: string[]): boolean {
+  return args?.every((arg) => arg.toString().match(ALPHA_NUMERIC_HYPHEN_REGEX)) || false
+}

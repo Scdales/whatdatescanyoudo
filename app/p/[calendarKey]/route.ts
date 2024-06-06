@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { decryptCalPar, encryptCalPar } from '@/lib/utils/api/calendar'
 import { createParticipant } from '@/lib/utils/db/participants'
+import {isValidAlphaNumeric} from "@/lib/utils/uuid";
 
 // export async function GET(req: NextRequest, ctx: { params: { calendarKey: string } }) {
 //   const {
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest, ctx: { params: { calendarKey: strin
   const {
     params: { calendarKey }
   } = ctx
-  if (calendarKey) {
+  if (calendarKey && isValidAlphaNumeric(calendarKey)) {
     const { participantId, calendarId } = decryptCalPar(calendarKey)
     const { participantName } = await req.json()
     if (participantId) {
