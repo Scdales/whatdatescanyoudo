@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
-import { TParticipantPayload } from '@/app/page'
+import type { TParticipantPayload } from '@/lib/types/calendar'
 
 const CreateDialog = ({
   open,

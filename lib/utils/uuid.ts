@@ -1,4 +1,4 @@
-import { ALPHA_NUMERIC_HYPHEN_REGEX } from '../constants'
+import { ALPHA_NUMERIC_HYPHEN_REGEX } from '@/lib/constants'
 
 export function isValidUuid(uuid: string) {
   const splitUuid = uuid.split('-')

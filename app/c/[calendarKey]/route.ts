@@ -1,30 +1,33 @@
 import { NextRequest } from 'next/server'
-import { deleteCalendar, editCalendarName, getCalendar, TGetCalendar } from '@/lib/utils/db/calendars'
-import { getParticipantDates, TGetParticipantDate } from '@/lib/utils/db/participantDates'
-import { getParticipants, TGetParticipant } from '@/lib/utils/db/participants'
 import { decryptCalPar } from '@/lib/utils/api/calendar'
-import {ALPHA_NUMERIC_HYPHEN_REGEX} from "@/lib/constants";
-import {isValidAlphaNumeric} from "@/lib/utils/uuid";
-
-export type TCalendarGetResponse = TGetCalendar & {
-  participants: (TGetParticipant & { dates: TGetParticipantDate[] })[]
-  participantId: string
-}
+import { isValidAlphaNumeric } from '@/lib/utils/uuid'
+import { cookieBasedClient } from '@/lib/utils/api/amplifyDataClient'
 
 export async function GET(req: NextRequest, ctx: { params: { calendarKey: string } }) {
   const {
     params: { calendarKey }
   } = ctx
   if (calendarKey && isValidAlphaNumeric(calendarKey)) {
-    const { calendarId, participantId } = decryptCalPar(calendarKey)
-    const [calendar, participants] = await Promise.all([getCalendar(calendarId), getParticipants(calendarId)])
-    const participantDates = await Promise.all(participants.map((participant) => getParticipantDates(participant.participantId)))
-    const calendarWithParticipants: TCalendarGetResponse = {
-      ...calendar,
-      participants: participants.map((participant, i) => ({ ...participant, dates: participantDates[i] })),
-      participantId
+    try {
+      const { calendarId, participantId } = decryptCalPar(calendarKey)
+      const [calendar, participants] = await Promise.all([
+        cookieBasedClient.models.Calendar.get({ id: calendarId }),
+        cookieBasedClient.models.Participant.list({ filter: { calendarId: { eq: calendarId } } })
+      ])
+      if (calendar.data && participants.data) {
+        const calendarWithParticipants = {
+          ...calendar.data,
+          participants: participants.data,
+          participantId
+        }
+        return Response.json(calendarWithParticipants)
+      }
+      console.error('')
+      return new Response('Error retrieving calendar', { status: 500 })
+    } catch (e) {
+      console.error(e)
+      return new Response('Error retrieving calendar', { status: 500 })
     }
-    return Response.json(calendarWithParticipants)
   }
   return new Response('', { status: 400 })
 }
@@ -36,7 +39,7 @@ export async function PUT(req: Request, ctx: { params: { calendarKey: string } }
   const { title } = await req.json()
   if (calendarKey && title && isValidAlphaNumeric(calendarKey, title)) {
     const { calendarId } = decryptCalPar(calendarKey)
-    const res = await editCalendarName(calendarId, title)
+    const res = await cookieBasedClient.models.Calendar.update({ id: calendarId, title })
     return Response.json(res, { status: 201 })
   }
   new Response('', { status: 400 })
@@ -49,7 +52,7 @@ export async function DELETE(req: Request, ctx: { params: { calendarKey: string 
   const { id } = await req.json()
   if (calendarKey && id && isValidAlphaNumeric(calendarKey, id)) {
     const { calendarId } = decryptCalPar(calendarKey)
-    await deleteCalendar(calendarId)
+    await cookieBasedClient.models.Calendar.delete({ id: calendarId })
     return new Response('', { status: 204 })
   }
   return new Response('', { status: 400 })

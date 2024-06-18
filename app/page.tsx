@@ -4,32 +4,13 @@ import CreateDialog from '@/lib/components/CreateDialog/CreateDialog'
 import CopyDialog from '@/lib/components/CopyDialog/CopyDialog'
 import { useCallback, useEffect, useState } from 'react'
 import Loading from '@/lib/components/Loading/Loading'
-import '../styles/globals.css'
-import home from '../styles/Home.module.css'
+import '@/styles/globals.css'
+import home from '@/styles/Home.module.css'
 import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { TCalendarGetResponse } from '@/app/c/[calendarKey]/route'
-import { TGetParticipant } from '@/lib/utils/db/participants'
-import { TGetParticipantDate } from '@/lib/utils/db/participantDates'
-import { parseCalendarInfo } from '@/lib/utils/calendar'
+import { parseCalendarInfo } from '@/lib/utils/fe/calendar'
 import UserDialog from '@/lib/components/UserDialog/UserDialog'
-
-export type TCalendar = Omit<TCalendarGetResponse, 'startDate' | 'endDate' | 'participants'> & {
-  startDate: Date
-  endDate: Date
-  participants: (TGetParticipant & { dates: (Omit<TGetParticipantDate, 'participantDate'> & { participantDate: Date })[] })[]
-}
-
-export type TOwnerPayload = {
-  title: string
-  owner: string
-  startDate: string
-  endDate: string
-}
-
-export type TParticipantPayload = {
-  participantName: string
-}
+import { TCalendar, TCalendarGetResponse, TOwnerPayload, TParticipantPayload } from '@/lib/types/calendar'
 
 export default function Home() {
   const searchParams = useSearchParams()
@@ -45,7 +26,7 @@ export default function Home() {
   const fetchCalendar = useCallback(
     (updatedCalendarKey?: string) => {
       try {
-        fetch(`/c/${calendarKeyParam || updatedCalendarKey}`)
+        fetch(`/c/${updatedCalendarKey || calendarKeyParam}`)
           .then((res) => {
             if (res.status === 200) {
               return res.json() as Promise<TCalendarGetResponse>
@@ -99,7 +80,7 @@ export default function Home() {
         setCopyOpenDialog(true)
         setOpenDialog(false)
         fetchCalendar(calendarKey)
-        router.push(`?s=${calendarKey}`)
+        router.replace(`?s=${calendarKey}`)
       }
       setOpenDialog(false)
     } catch (e) {
@@ -117,9 +98,9 @@ export default function Home() {
       <SnackbarProvider preventDuplicate>
         {loading ? (
           <Loading />
-        ) : calendarInfo?.calendarId && !calendarInfo?.participantId ? (
+        ) : calendarInfo?.id && !calendarInfo?.participantId ? (
           <>
-            <UserDialog open={openDialog} save={save} calendarOwner={calendarInfo?.owner} calendarTitle={calendarInfo?.title} />
+            <UserDialog open={openDialog} save={save} calendarOwner={calendarInfo?.ownerName} calendarTitle={calendarInfo?.title} />
             <CopyDialog open={openCopyDialog} text={copyText} shareableText={shareableCopyText} onClose={onCloseCopyDialog} />
           </>
         ) : (

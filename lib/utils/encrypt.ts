@@ -1,11 +1,8 @@
-import { compressToEncodedURIComponent } from 'lz-string'
-
 const crypto = require('crypto')
 const algorithm = 'aes-256-cbc'
 const password = process.env.PASSWORD
 const key = crypto.scryptSync(password, process.env.SALT, 32)
 const iv = Buffer.alloc(16, 0)
-const lz = require('lz-string')
 
 export function encrypt(data: any) {
   const text = JSON.stringify(data)

@@ -35,7 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.idea
+# amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
 
-docker/dynamodb/*
-!docker/dynamodb/.keep
+.idea

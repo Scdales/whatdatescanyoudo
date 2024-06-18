@@ -7,25 +7,25 @@ import { useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 import { DATE_DISPLAY_FORMAT, DATE_PAYLOAD_FORMAT } from '../../constants'
 import { format } from 'date-fns'
-import { TOwnerPayload } from '@/app/page'
+import type { TOwnerPayload } from '@/lib/types/calendar'
 
 const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TOwnerPayload) => void }) => {
   const [startDate, setStartDate] = useState<Date | null>(null)
   const [endDate, setEndDate] = useState<Date | null>(null)
-  const [owner, setOwner] = useState('')
+  const [ownerName, setOwnerName] = useState('')
   const [title, setTitle] = useState('')
 
   const createPayload = () => {
     if (isCreateDisabled) return
     save({
       title,
-      owner,
+      ownerName,
       startDate: format(startDate, DATE_PAYLOAD_FORMAT),
       endDate: format(endDate, DATE_PAYLOAD_FORMAT)
     })
   }
 
-  const isCreateDisabled = !startDate || !endDate || owner?.length <= 0 || title?.length <= 0
+  const isCreateDisabled = !startDate || !endDate || ownerName?.length <= 0 || title?.length <= 0
 
   return (
     <Dialog open={open}>
@@ -37,8 +37,8 @@ const CreateDialog = ({ open, save }: { open: boolean; save: (payload: TOwnerPay
               sx={{ my: 2 }}
               label="Calendar Owner Name"
               variant="outlined"
-              value={owner}
-              onChange={({ target: { value } }) => setOwner(value)}
+              value={ownerName}
+              onChange={({ target: { value } }) => setOwnerName(value)}
             />
             <TextField
               sx={{ my: 2 }}

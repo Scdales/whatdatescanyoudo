@@ -6,7 +6,7 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { useState } from 'react'
-import '../../../styles/calendar.css'
+import '@/styles/calendar.css'
 import { PickersActionBar } from '@mui/x-date-pickers'
 import { useSnackbar } from 'notistack'
 import { format } from 'date-fns'
@@ -14,8 +14,8 @@ import { DATE_PAYLOAD_FORMAT } from '../../constants'
 import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 import { useSearchParams } from 'next/navigation'
-import { TCalendar } from '@/app/page'
-import { getSelectedCount } from '@/lib/utils/calendar'
+import type { TCalendar } from '@/lib/types/calendar'
+import { getSelectedCount } from '@/lib/utils/fe/calendar'
 
 export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const searchParams = useSearchParams()
@@ -23,13 +23,12 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const { enqueueSnackbar } = useSnackbar()
   const calendarSansParticipant: TCalendar = {
     ...calendar,
-    participants: calendar.participants.filter((p) => p.participantId !== calendar.participantId)
+    participants: calendar.participants.filter((p) => p.id !== calendar.participantId)
   }
-  const participant = calendar.participants.find((p) => p.participantId === calendar.participantId)
+  const participant = calendar.participants.find((p) => p.id === calendar.participantId)
   const participantName = participant?.participantName || ''
   const participantSelectedDates = participant?.dates || []
-  const parsedSelectedDates = participantSelectedDates.filter((d) => !d.isDeleted).map((d) => d.participantDate)
-  const [selectedDays, setSelectedDays] = useState(parsedSelectedDates)
+  const [selectedDays, setSelectedDays] = useState(participantSelectedDates)
 
   function handleDayClick(day: Date) {
     const isSelected = selectedDays.find((selectedDay) => isSameDay(day, selectedDay))
@@ -73,7 +72,7 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
         className="MuiPickersToolbar-root MuiPickersLayout-toolbar"
         style={{ color: 'black', display: 'flex', justifyContent: 'center', flexDirection: 'column', borderBottom: '1px solid #ddd6d6' }}
       >
-        <div style={{ fontSize: '24px' }} className="header-title">{`${calendar.owner}'s Calendar`}</div>
+        <div style={{ fontSize: '24px' }} className="header-title">{`${calendar.ownerName}'s Calendar`}</div>
         <div style={{ fontSize: '16px', padding: '8px' }} className="header-title">
           {calendar.title}
         </div>
