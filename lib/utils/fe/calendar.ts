@@ -1,5 +1,5 @@
 import { isSameDay, parse } from 'date-fns'
-import type { TCalendar, TCalendarGetResponse } from '../../types/calendar'
+import type { TCalendar, TCalendarGetResponse } from '@/lib/types/calendar'
 import { DATE_PAYLOAD_FORMAT } from '@/lib/constants'
 
 export const getSelectedCount = (day: Date, calendar: TCalendar): number => {
