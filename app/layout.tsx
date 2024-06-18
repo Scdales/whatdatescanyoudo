@@ -13,15 +13,15 @@ export const metadata = {
       {
         media: '(prefers-color-scheme: light)',
         url: '/icon-dark.png',
-        href: '/icon-dark.png',
+        href: '/icon-dark.png'
       },
       {
         media: '(prefers-color-scheme: dark)',
         url: '/icon-light.png',
-        href: '/icon-light.png',
-      },
-    ],
-  },
+        href: '/icon-light.png'
+      }
+    ]
+  }
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
