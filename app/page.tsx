@@ -11,6 +11,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { parseCalendarInfo } from '@/lib/utils/fe/calendar'
 import UserDialog from '@/lib/components/UserDialog/UserDialog'
 import { TCalendar, TCalendarGetResponse, TOwnerPayload, TParticipantPayload } from '@/lib/types/calendar'
+import { isValidAlphaNumeric } from '@/lib/utils/uuid'
 
 export default function Home() {
   const searchParams = useSearchParams()
@@ -25,31 +26,36 @@ export default function Home() {
 
   const fetchCalendar = useCallback(
     (updatedCalendarKey?: string) => {
-      try {
-        fetch(`/c/${updatedCalendarKey || calendarKeyParam}`)
-          .then((res) => {
-            if (res.status === 200) {
-              return res.json() as Promise<TCalendarGetResponse>
-            }
-            return null
-          })
-          .then((data) => {
-            if (!data) {
-              setOpenDialog(true)
-            } else {
-              const calendarData = parseCalendarInfo(data)
-              setCalendarInfo(calendarData)
-              if (!data || !data.participantId) {
-                setOpenDialog(true)
+      const calendarKey = updatedCalendarKey || calendarKeyParam
+      if (isValidAlphaNumeric(calendarKey)) {
+        try {
+          fetch(`/c/${updatedCalendarKey || calendarKeyParam}`)
+            .then((res) => {
+              if (res.status === 200) {
+                return res.json() as Promise<TCalendarGetResponse>
               }
-            }
-          })
-          .finally(() => {
-            setLoading(false)
-          })
-      } catch (e) {
-        console.error(e)
-        enqueueSnackbar('Error fetching', { variant: 'error' })
+              return null
+            })
+            .then((data) => {
+              if (!data) {
+                setOpenDialog(true)
+              } else {
+                const calendarData = parseCalendarInfo(data)
+                setCalendarInfo(calendarData)
+                if (!data || !data.participantId) {
+                  setOpenDialog(true)
+                }
+              }
+            })
+            .finally(() => {
+              setLoading(false)
+            })
+        } catch (e) {
+          console.error(e)
+          enqueueSnackbar('Error fetching', { variant: 'error' })
+        }
+      } else {
+        enqueueSnackbar('Invalid calendar ID', { variant: 'error' })
       }
     },
     [calendarKeyParam]
@@ -95,7 +101,7 @@ export default function Home() {
 
   return (
     <main className={home.main}>
-      <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'center', vertical: 'top' }} >
+      <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'center', vertical: 'top' }}>
         {loading ? (
           <Loading />
         ) : calendarInfo?.id && !calendarInfo?.participantId ? (
