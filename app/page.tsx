@@ -1,17 +1,21 @@
 'use client'
-import Calendar from '@/lib/components/Calendar/Calendar'
-import CreateDialog from '@/lib/components/CreateDialog/CreateDialog'
-import CopyDialog from '@/lib/components/CopyDialog/CopyDialog'
 import { useCallback, useEffect, useState } from 'react'
-import Loading from '@/lib/components/Loading/Loading'
-import '@/styles/globals.css'
-import home from '@/styles/Home.module.css'
-import { enqueueSnackbar, SnackbarProvider } from 'notistack'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { parseCalendarInfo } from '@/lib/utils/fe/calendar'
+import { enqueueSnackbar, SnackbarProvider } from 'notistack'
+
+import Calendar from '@/lib/components/Calendar/Calendar'
+import CopyDialog from '@/lib/components/CopyDialog/CopyDialog'
+import CreateDialog from '@/lib/components/CreateDialog/CreateDialog'
+import Loading from '@/lib/components/Loading/Loading'
+import ErrorSnackbar from '@/lib/components/Snackbars/Error'
+import SuccessSnackbar from '@/lib/components/Snackbars/Success'
 import UserDialog from '@/lib/components/UserDialog/UserDialog'
 import { TCalendar, TCalendarGetResponse, TOwnerPayload, TParticipantPayload } from '@/lib/types/calendar'
+import { parseCalendarInfo } from '@/lib/utils/fe/calendar'
 import { isValidAlphaNumeric } from '@/lib/utils/uuid'
+
+import '@/styles/globals.css'
+import home from '@/styles/Home.module.css'
 
 export default function Home() {
   const searchParams = useSearchParams()

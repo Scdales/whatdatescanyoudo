@@ -1,6 +1,7 @@
 'use client'
-import { default as ClearIconMui } from '@mui/icons-material/Clear'
 import { useState } from 'react'
+
+import { default as ClearIconMui } from '@mui/icons-material/Clear'
 
 const ClearIcon = ({ onClick }: { onClick: () => void }) => {
   const [hover, setHover] = useState({})

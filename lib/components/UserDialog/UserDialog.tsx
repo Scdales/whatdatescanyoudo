@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+
 import type { TParticipantPayload } from '@/lib/types/calendar'
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
 
 const CreateDialog = ({
   open,

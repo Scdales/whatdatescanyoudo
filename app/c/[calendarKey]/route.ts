@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server'
+
+import { cookieBasedClient } from '@/lib/utils/api/amplifyDataClient'
 import { decryptCalPar } from '@/lib/utils/api/calendar'
 import { isValidAlphaNumeric } from '@/lib/utils/uuid'
-import { cookieBasedClient } from '@/lib/utils/api/amplifyDataClient'
 
 export async function GET(req: NextRequest, ctx: { params: { calendarKey: string } }) {
   const {

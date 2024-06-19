@@ -1,9 +1,11 @@
 'use client'
 
-import { Dialog, DialogContent, DialogTitle } from '@mui/material'
-import CopyIcon from './CopyIcon/CopyIcon'
 import { useSnackbar } from 'notistack'
+
+import { Dialog, DialogContent, DialogTitle } from '@mui/material'
+
 import ClearIcon from './ClearIcon/ClearIcon'
+import CopyIcon from './CopyIcon/CopyIcon'
 
 const CopyDialog = ({
   open,
@@ -25,7 +27,7 @@ const CopyDialog = ({
   }
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle style={{ textAlign: 'center' }}>
         <div style={{ display: 'flex', flexWrap: 'nowrap', alignItems: 'center' }}>
           <div>Your Calendar Link</div>

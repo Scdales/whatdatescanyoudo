@@ -1,7 +1,8 @@
 import { NextRequest } from 'next/server'
+
+import { cookieBasedClient } from '@/lib/utils/api/amplifyDataClient'
 import { encryptCalPar } from '@/lib/utils/api/calendar'
 import { isValidAlphaNumeric } from '@/lib/utils/uuid'
-import { cookieBasedClient } from '@/lib/utils/api/amplifyDataClient'
 
 export async function GET(req: NextRequest) {
   return new Response('', { status: 418 })

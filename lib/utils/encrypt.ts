@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+
 const algorithm = 'aes-256-cbc'
 const password = process.env?.PASSWORD || ''
 const salt = process.env?.SALT || ''

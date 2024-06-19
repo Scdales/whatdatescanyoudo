@@ -1,8 +1,10 @@
-import './globals.css'
-import { Inter } from 'next/font/google'
 import { ReactNode, Suspense } from 'react'
+import { Inter } from 'next/font/google'
+
 import Loading from '@/lib/components/Loading/Loading'
 import { metadata as metadataUtil } from '@/lib/utils/fe/metadata'
+
+import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
