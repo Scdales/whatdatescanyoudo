@@ -95,7 +95,7 @@ export default function Home() {
 
   return (
     <main className={home.main}>
-      <SnackbarProvider preventDuplicate>
+      <SnackbarProvider preventDuplicate anchorOrigin={{ horizontal: 'center', vertical: 'top' }} >
         {loading ? (
           <Loading />
         ) : calendarInfo?.id && !calendarInfo?.participantId ? (
