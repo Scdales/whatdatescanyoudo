@@ -7,11 +7,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { useState } from 'react'
 import '@/styles/calendar.css'
-import { PickersActionBar } from '@mui/x-date-pickers'
-import { useSnackbar } from 'notistack'
 import { format } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '../../constants'
-import { PickersActionBarProps } from '@mui/x-date-pickers/PickersActionBar/PickersActionBar'
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 import { useSearchParams } from 'next/navigation'
 import type { TCalendar } from '@/lib/types/calendar'
@@ -20,7 +17,6 @@ import { getSelectedCount } from '@/lib/utils/fe/calendar'
 export default function Calendar({ calendar }: { calendar: TCalendar }) {
   const searchParams = useSearchParams()
   const calendarKey = searchParams.get('s') || ''
-  const { enqueueSnackbar } = useSnackbar()
   const calendarSansParticipant: TCalendar = {
     ...calendar,
     participants: calendar.participants.filter((p) => p.id !== calendar.participantId)
@@ -83,35 +79,6 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
     )
   }
 
-  const onAccept = async () => {
-    try {
-      const payload = selectedDays.map((date) => format(date, DATE_PAYLOAD_FORMAT))
-      const res = await fetch('/p', {
-        method: 'put',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      })
-      if (res.status === 200) {
-        enqueueSnackbar('Saved')
-      } else {
-        enqueueSnackbar('Error while saving', { variant: 'error' })
-      }
-    } catch (e) {
-      console.error(e)
-      enqueueSnackbar('Error while saving', { variant: 'error' })
-    }
-  }
-
-  const onClear = () => {
-    setSelectedDays([])
-  }
-
-  const renderActions = (props: PickersActionBarProps) => {
-    return <PickersActionBar {...props} actions={['accept']} onAccept={onAccept} />
-  }
-
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div style={{ position: 'relative' }}>
@@ -119,7 +86,7 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
         <StaticDatePicker
           minDate={calendar.startDate}
           maxDate={calendar.endDate}
-          slots={{ day: renderDay, toolbar: renderToolbar, actionBar: renderActions }}
+          slots={{ day: renderDay, toolbar: renderToolbar }}
           views={['day']}
         />
       </div>
