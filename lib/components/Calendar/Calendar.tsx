@@ -1,20 +1,19 @@
 'use client'
 
-import { isSameDay } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
 import { PickersDay } from '@mui/x-date-pickers/PickersDay'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3'
 import { useState } from 'react'
 import '@/styles/calendar.css'
-import { format } from 'date-fns'
 import { DATE_PAYLOAD_FORMAT } from '../../constants'
 import { PickersDayProps } from '@mui/x-date-pickers/PickersDay/PickersDay'
 import { useSearchParams } from 'next/navigation'
 import type { TCalendar } from '@/lib/types/calendar'
 import { getSelectedCount } from '@/lib/utils/fe/calendar'
 
-export default function Calendar({ calendar }: { calendar: TCalendar }) {
+const Calendar = ({ calendar }: { calendar: TCalendar }) => {
   const searchParams = useSearchParams()
   const calendarKey = searchParams.get('s') || ''
   const calendarSansParticipant: TCalendar = {
@@ -93,3 +92,5 @@ export default function Calendar({ calendar }: { calendar: TCalendar }) {
     </LocalizationProvider>
   )
 }
+
+export default Calendar
