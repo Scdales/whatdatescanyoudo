@@ -1,7 +1,8 @@
-const crypto = require('crypto')
+import crypto from 'crypto'
 const algorithm = 'aes-256-cbc'
-const password = process.env.PASSWORD
-const key = crypto.scryptSync(password, process.env.SALT, 32)
+const password = process.env?.PASSWORD || ''
+const salt = process.env?.SALT || ''
+const key = crypto.scryptSync(password, salt, 32)
 const iv = Buffer.alloc(16, 0)
 
 export function encrypt(data: any) {
@@ -9,20 +10,14 @@ export function encrypt(data: any) {
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(key), iv)
   let encrypted = cipher.update(text)
   encrypted = Buffer.concat([encrypted, cipher.final()])
-  const encryptedString = encrypted.toString('hex')
-  // const compressedString = compressToEncodedURIComponent(encryptedString)
-  // return compressedString
-  return encryptedString
+  return encrypted.toString('hex')
 }
 
 export function decrypt(text: string) {
-  // const decompressedString = lz.decompressFromEncodedURIComponent(text)
-  // let encryptedText = Buffer.from(decompressedString, 'hex')
   let encryptedText = Buffer.from(text, 'hex')
   let decipher = crypto.createDecipheriv(algorithm, Buffer.from(key), iv)
   let decrypted = decipher.update(encryptedText)
   decrypted = Buffer.concat([decrypted, decipher.final()])
   const decryptedString = decrypted.toString()
-  const decryptedData = JSON.parse(decryptedString)
-  return decryptedData
+  return JSON.parse(decryptedString)
 }
