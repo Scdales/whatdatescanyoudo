@@ -32,9 +32,9 @@ export async function POST(req: Request) {
       }
       return new Response('Error creating calendar', { status: 400 })
     }
-    return new Response('', { status: 400 })
-  } catch (error) {
-    console.error(error)
+    return new Response('Invalid data supplied', { status: 400 })
+  } catch (e) {
+    console.error(e)
     return new Response('Error creating calendar', { status: 500 })
   }
 }

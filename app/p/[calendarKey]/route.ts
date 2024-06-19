@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, ctx: { params: { calendarKey: strin
     const { participantId, calendarId } = decryptCalPar(calendarKey)
     const { participantName } = await req.json()
     if (participantId) {
-      console.error('Participant', participantId, 'exists')
+      return new Response (`Participant ${participantId} exists`, { status: 400 })
     } else if (participantName) {
       const parRes = await cookieBasedClient.models.Participant.create({ calendarId, participantName })
       if (parRes.data?.id) {
@@ -19,8 +19,8 @@ export async function POST(req: NextRequest, ctx: { params: { calendarKey: strin
         return Response.json({ calendarKey, shareableKey: '' }, { status: 200 })
       }
     } else {
-      console.error('name not provided')
+      return new Response('Name not supplied', { status: 400 })
     }
   }
-  new Response('', { status: 400 })
+  return new Response('Invalid data supplied', { status: 400 })
 }

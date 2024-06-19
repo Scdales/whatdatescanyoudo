@@ -11,9 +11,9 @@ export async function PUT(req: Request, ctx: { params: { calendarKey: string; da
     const participant = await cookieBasedClient.models.Participant.get({ id: participantId })
     const updatedDates = participant?.data?.dates ? [...participant.data.dates, date] : [date]
     await cookieBasedClient.models.Participant.update({ calendarId, id: participantId, dates: updatedDates })
-    return Response.json('OK', { status: 201 })
+    return new Response('OK', { status: 201 })
   }
-  new Response('', { status: 400 })
+  return new Response('Invalid data supplied', { status: 400 })
 }
 
 export async function DELETE(req: Request, ctx: { params: { calendarKey: string; date: string } }) {
@@ -27,5 +27,5 @@ export async function DELETE(req: Request, ctx: { params: { calendarKey: string;
     await cookieBasedClient.models.Participant.update({ calendarId, id: participantId, dates: updatedDates })
     return new Response('OK', { status: 200 })
   }
-  return new Response('', { status: 400 })
+  return new Response('Invalid data supplied', { status: 400 })
 }
